@@ -60,7 +60,7 @@ docker build --platform=linux/amd64 --no-cache -t mfa:v1.0 .
 
 3. Run the Docker container:
 ```bash
-docker run --platform=linux/amd64 --rm -it -p 8501:8501 --name mfa mfa:v1.0
+docker run --platform=linux/amd64 --rm -d -it -p 8501:8501 --name mfa mfa:v1.0
 ```
 
 The app should now be running in [http://localhost:8501](http://localhost:8501)
