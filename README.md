@@ -14,6 +14,62 @@ The application was developed by Nils Wallenberg with contributions from Sofia T
 
 ## 2. Installation
 
+### Install and run in Python virtual environment
+
+1. Clone the repository (Windows), given that you have Python and Git installed:
+```bash
+git clone https://github.com/GothenburgUrbanClimateGroup/mfa.git
+cd mfa
+```
+
+2. Install Python virtual environment:
+```bash
+python -m venv .venv
+```
+
+3. Activate virtual environment:
+```bash
+.venv\Scripts\activate
+```
+
+4. Install required Python packages:
+```bash
+cd app
+pip install -r requirements.txt
+```
+
+5. Run Streamlit app:
+```bash
+streamlit run app.py
+```
+
+The app should now be running in [http://localhost:8501](http://localhost:8501)
+
+### Install and run with Docker, given that you have Docker and Powershell installed
+
+1. Clone the repository (Windows), given that you have Git installed:
+```bash
+git clone https://github.com/GothenburgUrbanClimateGroup/mfa.git
+cd mfa
+```
+
+2. Build the Docker image (ensure that Docker Desktop is running):
+```bash
+docker build --platform=linux/amd64 --no-cache -t mfa:v1.0 .
+```
+
+3. Run the Docker container:
+```bash
+docker run --platform=linux/amd64 --rm -it -p 8501:8501 --name mfa mfa:v1.0
+```
+
+The app should now be running in [http://localhost:8501](http://localhost:8501)
+
+4. To stop the app from running:
+```bash
+docker stop mfa
+```
+
 ## 3. How to use the matrix
 
 ### Before you start:
