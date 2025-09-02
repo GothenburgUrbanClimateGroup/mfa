@@ -5,9 +5,22 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.patches import Rectangle
 from matplotlib.path import Path
-import matplotlib as mpl
 import seaborn as sns
+import io
 
+# Used to save matplotlib figures with download buttons
+def fig_to_bytes(fig, fmt="png"):
+    buf = io.BytesIO()
+    # High DPI for crisp PNGs; ignored for vector formats
+    dpi = 300 if fmt in ("png", "jpg", "jpeg") else None
+    fig.savefig(buf, format=fmt, bbox_inches="tight", dpi=dpi)
+    buf.seek(0)
+    return buf
+
+# Optional: map format to MIME type for nicer downloads
+MIME = {"png": "image/png", "svg": "image/svg+xml", "pdf": "application/pdf"}
+
+# Function to change the weighting in the matrix
 def function_weighting(df_mfa, df_weights):
     #
     df_w = np.ones((df_weights.shape[0], 1))
@@ -62,26 +75,8 @@ def function_weighting(df_mfa, df_weights):
 
     return weighted_mfa, weighted_costs
 
+# mfa tab
 def mfa_tool():
-
-    # st.set_page_config(page_title="MFA", page_icon=":deciduous_tree:", layout='wide')
-
-    # st.markdown(
-    #     """
-    #     <style>
-    #         div[data-testid="column"] {
-    #             padding-top: 0px !important;
-    #             padding-bottom: 0px !important;
-    #         }
-    #     </style>
-    #     """,
-    #     unsafe_allow_html=True
-    # )
-
-    # st.title('Multifuntionality potential and cost analysis')
-    # Title set using markdown
-    #st.markdown("<h1 style='text-align: center; color: black;'>Multifuntionality potential and cost analysis</h1>", unsafe_allow_html=True)
-
     # Read excel file to plot in heatmap, scatter, etc.
     mfa = pd.read_excel('MFA.xlsx')
     mfa_copy = mfa.copy()
@@ -135,12 +130,6 @@ def mfa_tool():
     with col1:
         with st.container(height=container_height, border=True):
             set_row_height = 46
-            # st.markdown('')
-            # st.markdown('')
-            # st.markdown('')
-            # st.markdown('')
-            # st.markdown('') 
-            # st.markdown('')
 
             df_weights = st.data_editor(df_weights.style.set_table_styles([{'selector': 'td', 'props': [('font-size', '50px')]}]),  # Default size for all cells
                                         hide_index=True,
@@ -152,41 +141,38 @@ def mfa_tool():
                                             "Weights": {"alignment": "center"}},
                                         disabled=['Functions'])
         
-    with col2:
-        # Update mfa
-        updated_mfp, updated_costs = function_weighting(mfa.copy(), df_weights.copy())
-        mfa.iloc[8] = updated_mfp
-        mfa.iloc[11] = updated_costs
+    
+    #############################################
+    ### HEATMAP ###
+    # Heatmap plot
+    # Update mfa
+    updated_mfp, updated_costs = function_weighting(mfa.copy(), df_weights.copy())
+    mfa.iloc[8] = updated_mfp
+    mfa.iloc[11] = updated_costs
 
-        # Heat map
-        heatmap = plt.figure(figsize = (20, 10))
-        ax = heatmap.add_subplot(111)
+    # Heat map
+    heatmap = plt.figure(figsize = (20, 10))
+    ax = heatmap.add_subplot(111)
 
-        sns.heatmap(mfa, ax=ax, square=True, annot=True, cmap="Greens", cbar=False, linewidth=.5, annot_kws={"fontsize": 20})
-        ax.xaxis.tick_top()
-        ax.tick_params(axis='x', labelrotation=90)
-        #ax.set_yticks(ax.get_yticks(), ax.get_yticklabels(), rotation=-45, va='bottom')
-        ax.tick_params(axis='both', which='major', labelsize=20)
+    sns.heatmap(mfa, ax=ax, square=True, annot=True, cmap="Greens", cbar=False, linewidth=.5, annot_kws={"fontsize": 20})
+    ax.xaxis.tick_top()
+    ax.tick_params(axis='x', labelrotation=90)
+    ax.tick_params(axis='both', which='major', labelsize=20)
 
-        # Set Multifunctionality potential label to bold
-        ax.get_yticklabels()[8].set_weight("bold")
-        # Set Total costs label to bold
-        ax.get_yticklabels()[11].set_weight("bold")
+    # Set Multifunctionality potential label to bold
+    ax.get_yticklabels()[8].set_weight("bold")
+    # Set Total costs label to bold
+    ax.get_yticklabels()[11].set_weight("bold")
 
-        # Mark Multifunctionality potential in heat map (box)
-        # wanted_label = 'Multifunctionality potential'
-        wanted_index = 8
-        x, y, w, h = 0, wanted_index, mfa.shape[1], 1
-        ax.add_patch(Rectangle((x, y), w, h, fill=False, edgecolor='b', lw=4, clip_on=False))
+    # Mark Multifunctionality potential in heat map (box)
+    wanted_index = 8
+    x, y, w, h = 0, wanted_index, mfa.shape[1], 1
+    ax.add_patch(Rectangle((x, y), w, h, fill=False, edgecolor='b', lw=4, clip_on=False))
 
-        # Mark Total costs in heat map (box)
-        # wanted_label = 'Total costs'
-        wanted_index = 11
-        x, y, w, h = 0, wanted_index, mfa.shape[1], 1
-        ax.add_patch(Rectangle((x, y), w, h, fill=False, edgecolor='b', lw=4, clip_on=False))
-
-        with st.container(height=container_height, border=True):    
-            st.pyplot(heatmap, bbox_inches='tight', pad_inches=0, use_container_width=True)    
+    # Mark Total costs in heat map (box)
+    wanted_index = 11
+    x, y, w, h = 0, wanted_index, mfa.shape[1], 1
+    ax.add_patch(Rectangle((x, y), w, h, fill=False, edgecolor='b', lw=4, clip_on=False))
 
     #############################################
     ### SCATTER PLOT ###
@@ -235,8 +221,6 @@ def mfa_tool():
     greens_palette = sns.color_palette("Greens", 5)
 
     # Extract the RGB values at positions 2, 3, 4, and 5 (index starts from 0)
-    # rgb_values = greens_palette[1:], greens_palette[2:], greens_palette[3:], greens_palette[4:]
-    #print(greens_palette[1:])
     patch1 = patches.PathPatch(path1, facecolor=greens_palette[1], edgecolor=None, linestyle='')
     ax1.add_patch(patch1)
     patch2 = patches.PathPatch(path2, facecolor=greens_palette[4], edgecolor=None, linestyle='')
@@ -265,10 +249,34 @@ def mfa_tool():
     # ax1.set_xlabel('Maintenance and construction costs ', fontsize=20) # , fontweight='bold'
     ax1.set_xlabel('Costs ', fontsize=20) # , fontweight='bold'
 
-    #ax1.tick_params(axis='both', which='major', labelsize=14)
+    with col2:
+        with st.container(height=container_height, border=True):    
+            st.pyplot(heatmap, bbox_inches='tight', pad_inches=0, use_container_width=True)
+
+            _, bcol = st.columns([3, 1])
+            with bcol:
+
+                # Download button heatmap
+                st.download_button(
+                    f"Download heatmap",
+                    data=fig_to_bytes(heatmap, 'png'),
+                    file_name=f"heatmap.png",
+                    mime=MIME['png'],
+                    on_click="ignore",
+                    use_container_width=True,
+                )            
+
+                # Download button scatter
+                st.download_button(
+                    f"Download scatter",
+                    data=fig_to_bytes(scatter, 'png'),
+                    file_name=f"scatter.png",
+                    mime=MIME['png'],
+                    on_click="ignore",
+                    use_container_width=True,
+                )
 
     # Show in streamlit
-    # col1, col2, col3 = st.columns([.2, .6, .2])
     with col3:
         with st.container(height=container_height, border=True):   
             st.pyplot(scatter, bbox_inches='tight')
