@@ -1,6 +1,5 @@
 import streamlit as st
 from app_tabs.about import about_matrix
-from app_tabs.when_to_use import when_to_use
 from app_tabs.how_to_use import how_to_use
 from app_tabs.mfa import mfa_tool
 
