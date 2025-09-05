@@ -7,6 +7,7 @@ from matplotlib.patches import Rectangle
 from matplotlib.path import Path
 import seaborn as sns
 import io
+from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 # Used to save matplotlib figures with download buttons
 def fig_to_bytes(fig, fmt="png"):
@@ -129,19 +130,58 @@ def mfa_tool():
 
     with col1:
         with st.container(height=container_height, border=True):
-            set_row_height = 46
+            set_row_height = 42
 
-            df_weights = st.data_editor(df_weights.style.set_table_styles([{'selector': 'td', 'props': [('font-size', '50px')]}]),  # Default size for all cells
-                                        hide_index=True,
-                                        height=(df_weights.shape[0]+1) * set_row_height,
-                                        row_height=set_row_height,
-                                        column_config={
-                                            "Weights": st.column_config.NumberColumn(
-                                            "Weights", min_value=0, max_value=10),
-                                            "Weights": {"alignment": "center"}},
-                                        disabled=['Functions'])
-        
-    
+            # Configure grid options
+            gb = GridOptionsBuilder.from_dataframe(df_weights)
+            gb.configure_column("Function", editable=False)
+            # gb.configure_column("Weights", editable=True, type=["numericColumn"])
+            # Configure Weights column (integers only, left aligned)
+            gb.configure_column(
+                "Weights", 
+                editable=True, 
+                type=["numericColumn"],
+                precision=0,  # No decimal places (integers only)
+                cellEditor='agNumberCellEditor',
+                cellEditorParams={
+                    'min': 0,
+                    'max': 10,
+                    'precision': 0,  # This ensures integers only
+                    'step': 1,        # Step by 1 (whole numbers)
+                    #'showStepperButtons': True
+                },
+                valueFormatter="value",  # Display as-is (no formatting)
+                cellStyle={'textAlign': 'left'},  # Left align the values
+                headerClass='left-align-header'   # Left align the header
+            )
+
+            # Apply custom CSS to all cells
+            gb.configure_default_column(
+                cellStyle={'fontSize': '12px'}  # Default font size for all cells
+            )
+
+            # Set font size and other styling
+            gb.configure_grid_options(
+                domLayout='normal',
+                suppressRowClickSelection=True,
+                rowHeight=set_row_height  # your variable
+            )
+
+            gridOptions = gb.build()
+
+            # Display the grid
+            grid_response = AgGrid(
+                df_weights,
+                gridOptions=gridOptions,
+                update_mode=GridUpdateMode.VALUE_CHANGED,
+                height=len(df_weights) * set_row_height + 50,
+                allow_unsafe_jscode=True,
+                theme='streamlit'
+            )
+
+            # Get the updated dataframe
+            df_weights = grid_response['data']
+
     #############################################
     ### HEATMAP ###
     # Heatmap plot
