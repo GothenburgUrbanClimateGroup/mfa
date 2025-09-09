@@ -25,7 +25,7 @@ MIME = {"png": "image/png", "svg": "image/svg+xml", "pdf": "application/pdf"}
 def create_table(df_weights):
     # Initialize font size in session state if not exists
     if 'table_font_size' not in st.session_state:
-        st.session_state.table_font_size = 10
+        st.session_state.table_font_size = 8
     
     # Use current font size
     current_font_size = st.session_state.table_font_size
