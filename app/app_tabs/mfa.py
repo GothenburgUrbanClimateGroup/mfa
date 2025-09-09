@@ -21,6 +21,63 @@ def fig_to_bytes(fig, fmt="png"):
 # Optional: map format to MIME type for nicer downloads
 MIME = {"png": "image/png", "svg": "image/svg+xml", "pdf": "application/pdf"}
 
+# Function to create the weights table, including a select box for font size #TODO font size should change with screen resolution
+def create_table(df_weights):
+    # Initialize font size in session state if not exists
+    if 'table_font_size' not in st.session_state:
+        st.session_state.table_font_size = 12
+    
+    # Use current font size
+    current_font_size = st.session_state.table_font_size
+    
+    # Configure AgGrid with current font size
+    gb = GridOptionsBuilder.from_dataframe(df_weights)
+    gb.configure_column("Function", editable=False, cellStyle={'fontSize': f'{current_font_size}px'})
+    gb.configure_column(
+        "Weights", 
+        editable=True, 
+        type=["numericColumn"],
+        precision=0,
+        cellEditor='agNumberCellEditor',
+        cellEditorParams={'min': 0, 'max': 10, 'precision': 0, 'step': 1},
+        cellStyle={'textAlign': 'left', 'fontSize': f'{current_font_size}px'}
+    )
+    gb.configure_default_column(cellStyle={'fontSize': f'{current_font_size}px'})
+    
+    row_height = current_font_size + 20
+    gb.configure_grid_options(
+        domLayout='normal',
+        suppressRowClickSelection=True,
+        rowHeight=row_height
+    )
+    
+    gridOptions = gb.build()
+    
+    # Display AgGrid first
+    grid_response = AgGrid(
+        df_weights,
+        gridOptions=gridOptions,
+        update_mode=GridUpdateMode.VALUE_CHANGED,
+        height=len(df_weights) * row_height + 50,
+        allow_unsafe_jscode=True,
+        theme='streamlit'
+    )
+    
+    # Selectbox below the table
+    font_size = st.selectbox(
+        "Table Font Size",
+        options=[8, 10, 12, 14, 16, 18, 20],
+        index=[8, 10, 12, 14, 16, 18, 20].index(current_font_size),
+        key="weights_table_font_size"
+    )
+    
+    # Update session state if font size changed
+    if font_size != st.session_state.table_font_size:
+        st.session_state.table_font_size = font_size
+        st.rerun()  # Rerun to update the table with new font size
+    
+    return grid_response['data']
+
 # Function to change the weighting in the matrix
 def function_weighting(df_mfa, df_weights):
     #
@@ -123,64 +180,6 @@ def mfa_tool():
                             'Maintenance'])
     df_weights = pd.DataFrame(df_row_names, columns=['Function'])
     df_weights['Weights'] = np.ones((df_row_names.shape[0]))
-
-    # Create two columns to show weights dataframe and mfa table
-    col1, col2, col3 = st.columns([.2, .45, .35], gap="small")
-    container_height = 550
-
-    with col1:
-        with st.container(height=container_height, border=True):
-            set_row_height = 42
-
-            # Configure grid options
-            gb = GridOptionsBuilder.from_dataframe(df_weights)
-            gb.configure_column("Function", editable=False)
-            # gb.configure_column("Weights", editable=True, type=["numericColumn"])
-            # Configure Weights column (integers only, left aligned)
-            gb.configure_column(
-                "Weights", 
-                editable=True, 
-                type=["numericColumn"],
-                precision=0,  # No decimal places (integers only)
-                cellEditor='agNumberCellEditor',
-                cellEditorParams={
-                    'min': 0,
-                    'max': 10,
-                    'precision': 0,  # This ensures integers only
-                    'step': 1,        # Step by 1 (whole numbers)
-                    #'showStepperButtons': True
-                },
-                valueFormatter="value",  # Display as-is (no formatting)
-                cellStyle={'textAlign': 'left'},  # Left align the values
-                headerClass='left-align-header'   # Left align the header
-            )
-
-            # Apply custom CSS to all cells
-            gb.configure_default_column(
-                cellStyle={'fontSize': '12px'}  # Default font size for all cells
-            )
-
-            # Set font size and other styling
-            gb.configure_grid_options(
-                domLayout='normal',
-                suppressRowClickSelection=True,
-                rowHeight=set_row_height  # your variable
-            )
-
-            gridOptions = gb.build()
-
-            # Display the grid
-            grid_response = AgGrid(
-                df_weights,
-                gridOptions=gridOptions,
-                update_mode=GridUpdateMode.VALUE_CHANGED,
-                height=len(df_weights) * set_row_height + 50,
-                allow_unsafe_jscode=True,
-                theme='streamlit'
-            )
-
-            # Get the updated dataframe
-            df_weights = grid_response['data']
 
     #############################################
     ### HEATMAP ###
@@ -289,6 +288,15 @@ def mfa_tool():
     # ax1.set_xlabel('Maintenance and construction costs ', fontsize=20) # , fontweight='bold'
     ax1.set_xlabel('Costs ', fontsize=20) # , fontweight='bold'
 
+    # Create two columns to show weights dataframe and mfa table
+    col1, col2, col3 = st.columns([.2, .45, .35], gap="small")
+    container_height = 550
+
+    # Weight table
+    with col1:
+        df_weights = create_table(df_weights)
+
+    # Show matrix in Streamlit
     with col2:
         with st.container(height=container_height, border=True):    
             st.pyplot(heatmap, bbox_inches='tight', pad_inches=0, use_container_width=True)
@@ -314,9 +322,9 @@ def mfa_tool():
                     mime=MIME['png'],
                     on_click="ignore",
                     use_container_width=True,
-                )
+            )
 
-    # Show in streamlit
+    # Show in scatter plot in Streamlit
     with col3:
         with st.container(height=container_height, border=True):   
             st.pyplot(scatter, bbox_inches='tight')

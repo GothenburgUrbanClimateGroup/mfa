@@ -13,8 +13,11 @@ def about_matrix():
 
         about_text = """
 
-        For detailed description of the matrix, functions, costs, BGI elements and assessment see [Thorsson et al. (2025)](https://doi.org/10.1016/j.cities.2025.106239). 
-        In the supplmentary to the scientific paper you can also find an editable Excel file of the matrix if you want to use it locally on your computer.
+        For detailed description of the matrix, functions, costs, BGI elements, assessment and contact information, see 
+        [Thorsson et al. (2025)](https://doi.org/10.1016/j.cities.2025.106239). 
+        In the supplmentary to the scientific paper you can also find an editable Excel file of the matrix if you want to use it 
+        locally on your computer. If you encounter any errors with the app, please submit an issue to our 
+        [GitHub repository](https://github.com/GothenburgUrbanClimateGroup/mfa).
 
         The Multifunctional Potential and Cost Matrix provides an integrated assessment of the benefits and costs of urban blue-green 
         infrastructure (BGI) elements. Firstly, the potential to provide three functions: urban stormwater management, heat stress reduction 
