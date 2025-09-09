@@ -30,6 +30,12 @@ def create_table(df_weights):
     # Use current font size
     current_font_size = st.session_state.table_font_size
     
+    custom_css = {
+    ".ag-theme-streamlit .left-align-header .ag-header-cell-label": {
+        "justify-content": "flex-start"
+        }
+    }
+
     # Configure AgGrid with current font size
     gb = GridOptionsBuilder.from_dataframe(df_weights)
     gb.configure_column("Function", editable=False, cellStyle={'fontSize': f'{current_font_size}px'})
@@ -40,9 +46,10 @@ def create_table(df_weights):
         precision=0,
         cellEditor='agNumberCellEditor',
         cellEditorParams={'min': 0, 'max': 10, 'precision': 0, 'step': 1},
-        cellStyle={'textAlign': 'left', 'fontSize': f'{current_font_size}px'}
+        cellStyle={'textAlign': 'left', 'fontSize': f'{current_font_size}px'},
+        headerClass='left-align-header'
     )
-    gb.configure_default_column(cellStyle={'fontSize': f'{current_font_size}px'})
+    gb.configure_default_column(cellStyle={'textAlign': 'left', 'fontSize': f'{current_font_size}px'})
     
     row_height = current_font_size + 20
     gb.configure_grid_options(
@@ -60,7 +67,8 @@ def create_table(df_weights):
         update_mode=GridUpdateMode.VALUE_CHANGED,
         height=len(df_weights) * row_height + 50,
         allow_unsafe_jscode=True,
-        theme='streamlit'
+        theme='streamlit',
+        custom_css=custom_css
     )
     
     # Selectbox below the table
