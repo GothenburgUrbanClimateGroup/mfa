@@ -25,7 +25,7 @@ MIME = {"png": "image/png", "svg": "image/svg+xml", "pdf": "application/pdf"}
 def create_table(df_weights):
     # Initialize font size in session state if not exists
     if 'table_font_size' not in st.session_state:
-        st.session_state.table_font_size = 12
+        st.session_state.table_font_size = 10
     
     # Use current font size
     current_font_size = st.session_state.table_font_size
@@ -160,8 +160,8 @@ def mfa_tool():
         elif mfa_functions.iloc[i-1] == 'Outdoor daytime':
             mfa_functions.iloc[i] = 'Outdoor nighttime'
 
-    mfa_functions.iloc[2] = 'Outdoor heat reduction (D)'
-    mfa_functions.iloc[3] = 'Outdoor heat reduction (N)'
+    mfa_functions.iloc[2] = 'Outdoor heat reduction (day)'
+    mfa_functions.iloc[3] = 'Outdoor heat reduction (night)'
     mfa_functions.iloc[4] = 'Indoor heat reduction'
     mfa_functions.iloc[8] = 'Multifunctionality potential'
     mfa_functions.iloc[9] = 'Construction costs'
@@ -178,8 +178,8 @@ def mfa_tool():
     # Weights dataframe
     df_row_names = np.array(['Runoff volume management', 
                             'Runoff pollution reduction',
-                            'Outdoor heat reduction (D)',
-                            'Outdoor heat reduction (N)',
+                            'Outdoor heat reduction (day)',
+                            'Outdoor heat reduction (night)',
                             'Indoor heat reduction',
                             'Aesthetics',
                             'Use (passive)',
