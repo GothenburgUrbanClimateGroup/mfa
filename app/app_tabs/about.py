@@ -44,13 +44,9 @@ def about_matrix():
         broader context of sustainable drainage systems.
 
         The potential of each element to provide different (sub)functions is assessed on a linear nominal scale from 1 (lowest potential) to 5 
-        (highest potential). These values represent the potential per unit area, accounting for differences in:
-
-        - Element characteristics (e.g., species, diversity, morphology, and vitality),
-
-        - Growing conditions (e.g., access to water, nutrition, and light), and
-
-        - Size (e.g., a single tree vs a large park).
+        (highest potential). These values represent the potential per unit area, accounting for differences in element characteristics 
+        (e.g., species, diversity, morphology, and vitality), growing conditions (e.g., access to water, nutrition, and light), and size 
+        (e.g., a single tree vs a large park).
 
         Similarly, construction costs and long-term maintenance costs are assessed per unit area on a linear nominal scale from 1 (highest cost) 
         to 5 (lowest cost). The matrix also allows users to apply weighting to each function and cost, as their relative importance is context dependent.
