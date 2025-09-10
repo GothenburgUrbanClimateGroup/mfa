@@ -189,6 +189,14 @@ def mfa_tool():
     df_weights = pd.DataFrame(df_row_names, columns=['Function'])
     df_weights['Weights'] = np.ones((df_row_names.shape[0]))
 
+    # Create two columns to show weights dataframe and mfa table
+    col1, col2, col3 = st.columns([.2, .45, .35], gap="small")
+    container_height = 550
+
+    # Weight table
+    with col1:
+        df_weights = create_table(df_weights)
+
     #############################################
     ### HEATMAP ###
     # Heatmap plot
@@ -295,14 +303,6 @@ def mfa_tool():
     ax1.set_ylabel('Multifunctionality potential', fontsize=20) # , fontweight='bold'
     # ax1.set_xlabel('Maintenance and construction costs ', fontsize=20) # , fontweight='bold'
     ax1.set_xlabel('Costs ', fontsize=20) # , fontweight='bold'
-
-    # Create two columns to show weights dataframe and mfa table
-    col1, col2, col3 = st.columns([.2, .45, .35], gap="small")
-    container_height = 550
-
-    # Weight table
-    with col1:
-        df_weights = create_table(df_weights)
 
     # Show matrix in Streamlit
     with col2:
