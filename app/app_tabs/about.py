@@ -22,7 +22,7 @@ def about_matrix():
         The Multifunctional Potential and Cost Matrix provides an integrated assessment of the benefits and costs of urban blue-green 
         infrastructure (BGI) elements. Firstly, the potential to provide three functions: urban stormwater management, heat stress reduction 
         and recreation, is assessed based on scientific evidence. Secondly, the combined performance across these three functions, i.e. 
-        the **multifunctionality potential**, is related to costs of initial construction and long-term maintenance to support planning decisions.
+        the multifunctionality potential, is related to costs of initial construction and long-term maintenance to support planning decisions.
 
         Each function is divided into sub-functions:
 
@@ -56,9 +56,7 @@ def about_matrix():
         functions, by relating performance to costs in the context of site-specific conditions and needs.
 
         The assessment of (sub)functions and costs has been developed in a Swedish context, but it is considered applicable in most geographical and 
-        climate regions. Nevertheless, users are
-
-        encouraged to reassess the scores to reflect local conditions and to examine potential synergies and trade-offs. For more detailed and 
+        climate regions. Nevertheless, users are encouraged to reassess the scores to reflect local conditions and to examine potential synergies and trade-offs. For more detailed and 
         site-specific assessment of costs and (sub)functions, the use of monetary cost models and biogeophysical models is recommended.        
 
         """
